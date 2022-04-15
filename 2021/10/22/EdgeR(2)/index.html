@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"tanzhengtang.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.0","exturl":false,"sidebar":{"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="EdgeR查找差异表达基因(二) 前言 第一篇有关于EdgeR处理差异基因的过程中有瑕疵的，这篇文章一是要提出上次过程中没写出的问题，二是要写出有关EdgeR原理方面的东西。 ## 数据来源 癌症细胞：Encode上HepG2癌症细胞系total RNA-Seq的基因定量文件。 正常细胞：Encode上正常肝组织的total RNA-Seq的基因定量文件。 流程中的问题 基因定量信息 上次使用了E">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EdgeR查找差异表达基因(二)">
+<meta property="og:url" content="https://tanzhengtang.github.io/2021/10/22/EdgeR(2)/index.html">
+<meta property="og:site_name" content="Tan&#39;s Blog">
+<meta property="og:description" content="EdgeR查找差异表达基因(二) 前言 第一篇有关于EdgeR处理差异基因的过程中有瑕疵的，这篇文章一是要提出上次过程中没写出的问题，二是要写出有关EdgeR原理方面的东西。 ## 数据来源 癌症细胞：Encode上HepG2癌症细胞系total RNA-Seq的基因定量文件。 正常细胞：Encode上正常肝组织的total RNA-Seq的基因定量文件。 流程中的问题 基因定量信息 上次使用了E">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tanzhengtang.github.io/EdgeR(2)/1.png">
+<meta property="article:published_time" content="2021-10-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-06T14:34:26.900Z">
+<meta property="article:author" content="Zhengtang Tan">
+<meta property="article:tag" content="RNA-Seq">
+<meta property="article:tag" content="DE-Analysis">
+<meta property="article:tag" content="EdgeR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tanzhengtang.github.io/EdgeR(2)/1.png">
+
+
+<link rel="canonical" href="https://tanzhengtang.github.io/2021/10/22/EdgeR(2)/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://tanzhengtang.github.io/2021/10/22/EdgeR(2)/","path":"2021/10/22/EdgeR(2)/","title":"EdgeR查找差异表达基因(二)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>EdgeR查找差异表达基因(二) | Tan's Blog</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Tan's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Have Fun</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#edger%E6%9F%A5%E6%89%BE%E5%B7%AE%E5%BC%82%E8%A1%A8%E8%BE%BE%E5%9F%BA%E5%9B%A0%E4%BA%8C"><span class="nav-text">EdgeR查找差异表达基因(二)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">流程中的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%9B%A0%E5%AE%9A%E9%87%8F%E4%BF%A1%E6%81%AF"><span class="nav-text">基因定量信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E7%9F%A5%E8%AF%86"><span class="nav-text">统计知识</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zhengtang Tan"
+      src="/images/me.png">
+  <p class="site-author-name" itemprop="name">Zhengtang Tan</p>
+  <div class="site-description" itemprop="description">Bioinformatics</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tanzhengtang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;tanzhengtang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tanzhengtang@163.com" title="E-Mail → mailto:tanzhengtang@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://tanzhengtang.github.io/2021/10/22/EdgeR(2)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.png">
+      <meta itemprop="name" content="Zhengtang Tan">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tan's Blog">
+      <meta itemprop="description" content="Bioinformatics">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="EdgeR查找差异表达基因(二) | Tan's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          EdgeR查找差异表达基因(二)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-10-22 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-22T00:00:00+08:00">2021-10-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-04-06 22:34:26" itemprop="dateModified" datetime="2022-04-06T22:34:26+08:00">2022-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%94%9F%E4%BF%A1/" itemprop="url" rel="index"><span itemprop="name">生信</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="edger查找差异表达基因二">EdgeR查找差异表达基因(二)</h1>
+<h2 id="前言">前言</h2>
+<p>第一篇有关于EdgeR处理差异基因的过程中有瑕疵的，这篇文章一是要提出上次过程中没写出的问题，二是要写出有关EdgeR原理方面的东西。<br />
+## 数据来源<br />
+癌症细胞：<code>Encode</code>上<code>HepG2</code>癌症细胞系<code>total RNA-Seq</code>的基因定量文件。<br />
+正常细胞：<code>Encode</code>上正常肝组织的<code>total RNA-Seq</code>的基因定量文件。</p>
+<h2 id="流程中的问题">流程中的问题</h2>
+<h3 id="基因定量信息">基因定量信息</h3>
+<p>上次使用了<code>Encode</code>的基因定量文件中<code>gene_id</code>和<code>expected_count</code>两列组成EdgeR的输入数据文件。这样直接使用是粗糙的。<br />
+<code>下载的ENSG数据中常常有小数点，小数点后面的表示的版本类型，在进行匹配时需要删除小数点后面的，一般情况下ENSG一共是15位，所有保留前15位字符就可以了.</code><br />
+<strong>读入数据:</strong></p>
+<blockquote>
+<p>rep1=read.table("./ENCFF944RFV.tsv",header=T)<br />
+rep2=read.table("./ENCFF529HSE.tsv",header=T)<br />
+rep3=read.table("./ENCFF396FZT.tsv",header=T)<br />
+rep4=read.table("./ENCFF103FSL.tsv",header=T)<br />
+norm1=read.table("~/Project/Normal_tissue/Liver/RNA/ENCFF780YUS.tsv",header
+= T)<br />
+norm2=read.table("~/Project/Normal_tissue/Liver/RNA/ENCFF846SOK.tsv",header
+= T)</p>
+</blockquote>
+<p><strong>处理gene_id:</strong><br />
+以rep1为例:</p>
+<blockquote>
+<p>rep1 = rep1[grep('ENSG',test$gene_id,invert = F),]<br />
+rep1$gene_id = substr(rep1$gene_id,1,15)<br />
+rep1 = aggregate(expected_count ~ gene_id , data = rep1,sum)</p>
+</blockquote>
+<p>将其他的rep和norm作同样的处理</p>
+<p><strong>得到矩阵:</strong></p>
+<blockquote>
+<p>count=data.frame(rep1$gene_id,rep1$expected_count,rep2$expected_count,rep3$expected_count,rep4$expected_count,norm1$expected_count,norm2$expected_count)<br />
+colnames(count)=c('gene_id','rep1','rep2','rep3','rep4','norm1','norm2')<br />
+rownames(count)=count$gene_id<br />
+count = count[,-c(1)]</p>
+</blockquote>
+<p>原始矩阵count:</p>
+<p><img src="/EdgeR(2)/1.png" /></p>
+<p><strong>分组:</strong></p>
+<p><code>分组</code>步骤同后面的流程息息相关。<br />
+它会影响<code>过滤低表达基因</code>和<code>检验差异基因</code>。<br />
+1.在<code>过滤表达基因</code>部分:<br />
+<code>The filtering should be based on the grouping factors or treatment factors that will be involved in the differential expression teststested for, rather than on blocking variables that are not of scientific interest in themselves.</code><br />
+2.在<code>检验差异基因</code>部分:<br />
+(1)
+单因子分组实验:<code>The classic edgeR pipeline</code>---&gt;<code>edgeR uses the quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor.</code><br />
+(2)
+多因子复杂分组:<code>More complex experiments (glm functionality)</code>---&gt;<code>Generalized linear models (GLMs) are an extension of classical linear models to nonnormally distributed response data</code></p>
+<h2 id="统计知识">统计知识</h2>
+<p>内容来源:<br />
+<a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/72513104">https://zhuanlan.zhihu.com/p/72513104</a><br />
+<strong>线性回归:</strong><br />
+<strong>设计矩阵:</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RNA-Seq/" rel="tag"># RNA-Seq</a>
+              <a href="/tags/DE-Analysis/" rel="tag"># DE-Analysis</a>
+              <a href="/tags/EdgeR/" rel="tag"># EdgeR</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/10/09/clusterProfiler/" rel="prev" title="clusterProfiler进行GO、KEGG以及相应的可视化">
+                  <i class="fa fa-chevron-left"></i> clusterProfiler进行GO、KEGG以及相应的可视化
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhengtang Tan</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
