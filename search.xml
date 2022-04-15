@@ -16,16 +16,15 @@ href="http://nodejs.cn/">http://nodejs.cn/</a>(node.js的中文官网)<br />
 href="https://docs.npmjs.com/">https://docs.npmjs.com/</a>（npm的官方文档）<br />
 <a
 href="https://github.com/">https://github.com/</a>（github官网）</em></strong></p>
-<p><strong>2. 整个过程以Mac系统进行说明。</strong><br />
-<span id="more"></span><br />
-# 正文：<br />
-## GitHub与Git</p>
+<p><strong>2. 整个过程以Mac系统进行说明。</strong></p>
+<span id="more"></span>
+<h1 id="正文">正文：</h1>
+<h2 id="github与git">GitHub与Git</h2>
 <h3 id="github的账号注册">GitHub的账号注册</h3>
 <p><strong>进入官网(<a
 href="https://github.com/">https://github.com/</a>)后，用邮箱注册一个即可。</strong></p>
 <h3 id="创建github仓库">创建GitHub仓库</h3>
-<p>&lt;! -- more -- &gt;
-打开GitHub网页，登陆账号后，网页右上角有个➕的一个图标，点击它后再点击<code>New repository</code>。<br />
+<p>打开GitHub网页，登陆账号后，网页右上角有个➕的一个图标，点击它后再点击<code>New repository</code>。<br />
 <img src="/BuildBlog/blog1.png" /></p>
 <p>这样会出来一个全新的页面，你需要在这个页面上的<code>Repository name</code>一栏填入<em>xxxxxx.github.io</em>。<em>xxxxxxx</em>就是你的GitHub账户名，<strong>整个必须完全一致才行</strong>。然后在<code>Add a README file</code>一栏进行打勾勾选，再点击<code>Create repository</code>进行创建。<br />
 <img src="/BuildBlog/blog2.png" /></p>
