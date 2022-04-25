@@ -489,7 +489,7 @@ L(y_i,f(x_i))\]</span></li>
   </entry>
   <entry>
     <title>排序算法</title>
-    <url>/2022/04/05/sort/</url>
+    <url>/2022/04/25/sort/</url>
     <content><![CDATA[<h1 id="排序">排序</h1>
 <p>均为笔记，内容来自:<br />
 https://oi-wiki.org/basic/sort-intro/</p>
@@ -529,17 +529,39 @@ class="math inline">\(O(nLogn)\)</span>。<br />
 2. 递归地分别对两个子序列进行归并排序；<br />
 3. 合并两个子序列。</p>
 <p>将重点放在第3步上，合并两个有序的子序列。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">//a = [4,5]</span><br><span class="line">//b = [3,10]</span><br><span class="line">int* merge_sort(int a[],int b[])&#123;</span><br><span class="line">    int a_size = sizeof(a)/sizeof(int);</span><br><span class="line">    int b_size = sizeof(b)/sizeof(int);</span><br><span class="line">    int tmp_size = a_size + b_size;</span><br><span class="line">    int tmp[tmp_size];</span><br><span class="line">    int s = 0;</span><br><span class="line">    int a_s = 0;</span><br><span class="line">    int b_s = 0;</span><br><span class="line">    int a_e = a_size - 1;</span><br><span class="line">    int b_e = b_size - 1;</span><br><span class="line">    //从头开始将每个列表进行比较。</span><br><span class="line">    //类似插入排序，两个列表中小的元素插入新的数组前面。由于是都是有序的序列，插入后只需将其中一个的指针往后移动，然后再进行比较。</span><br><span class="line">    while(a_s &lt;= a_e &amp;&amp; b_s &lt;= b_e)&#123;</span><br><span class="line">        if(a[a_s] &gt; b[b_s])&#123;</span><br><span class="line">            tmp[s++] = a[a_s++];</span><br><span class="line">        &#125;</span><br><span class="line">        else&#123;</span><br><span class="line">            tmp[s++] = b[b_s++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    while(a_s &lt;= a_e)&#123;</span><br><span class="line">        tmp[s++] = a[a_s++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(b_s &lt;= b_e)&#123;</span><br><span class="line">        tmp[s++] = b[b_s++];</span><br><span class="line">    &#125;</span><br><span class="line">    return tmp;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">上述的所花费的时间，即b_size + a_size，而这两个是由原先的列表所分割而成，即原列表的元素数量大小。  </span><br><span class="line">再来对1、2两步进行实现。  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>void merge(int a[],int t[],int start,int end){
-//终止条件即分割后的列表中最少存在1个元素。 if(start - end &lt;=
-1){return;} int mid = start + ((start - end) &gt;&gt; 1); //递归
-merge(a,t,start,mid); merge(a,t,mid,end);
-//合并序列，所采用的思想同merge_sort中是一样的，但需进行一定改写，因为此处是自身的分割序列，为了减小开销，我们并未真正的开辟了两个数组进行比较。
-int s = start; int s1 = start; int ed1 = mid; int s2 = mid + 1; int ed2
-= end; while(s1 &lt;= ed1 &amp;&amp; s2 &lt;= ed2){ if(a[s1] &gt;
-a[s2]){ t[s++] = a[s2++]; } else{ t[s++] = a[s1++]; } } while(s1 &lt;=
-ed1){ t[s++] = a[s1++]; } while(s2 &lt;= ed2){ t[s++] = a[s2++]; } }
-```</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">//a = [4,5]</span><br><span class="line">//b = [3,10]</span><br><span class="line">int* merge_sort(int a[],int b[])&#123;</span><br><span class="line">    int a_size = sizeof(a)/sizeof(int);</span><br><span class="line">    int b_size = sizeof(b)/sizeof(int);</span><br><span class="line">    int tmp_size = a_size + b_size;</span><br><span class="line">    int tmp[tmp_size];</span><br><span class="line">    int s = 0;</span><br><span class="line">    int a_s = 0;</span><br><span class="line">    int b_s = 0;</span><br><span class="line">    int a_e = a_size - 1;</span><br><span class="line">    int b_e = b_size - 1;</span><br><span class="line">    //从头开始将每个列表进行比较。</span><br><span class="line">    //类似插入排序，两个列表中小的元素插入新的数组前面。由于是都是有序的序列，</span><br><span class="line">    //插入后只需将其中一个的指针往后移动，然后再进行比较。</span><br><span class="line">    while(a_s &lt;= a_e &amp;&amp; b_s &lt;= b_e)&#123;</span><br><span class="line">        if(a[a_s] &gt; b[b_s])&#123;</span><br><span class="line">            tmp[s++] = a[a_s++];</span><br><span class="line">        &#125;</span><br><span class="line">        else&#123;</span><br><span class="line">            tmp[s++] = b[b_s++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    while(a_s &lt;= a_e)&#123;</span><br><span class="line">        tmp[s++] = a[a_s++];</span><br><span class="line">    &#125;</span><br><span class="line">    while(b_s &lt;= b_e)&#123;</span><br><span class="line">        tmp[s++] = b[b_s++];</span><br><span class="line">    &#125;</span><br><span class="line">    return tmp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述的所花费的时间，即b_size +
+a_size，而这两个是由原先的列表所分割而成，即原列表的元素数量大小。<br />
+再来对1、2两步进行实现。</p>
+<pre><code>void merge(int a[],int t[],int start,int end)&#123;
+    //终止条件即分割后的列表中最少存在1个元素。
+    if(start - end &lt;= 1)&#123;return;&#125;
+    int mid = start + ((start - end) &gt;&gt;  1);
+    //递归
+    merge(a,t,start,mid);
+    merge(a,t,mid,end);
+    //合并序列，所采用的思想同merge_sort中是一样的，但需进行一定改写，
+    //因为此处是自身的分割序列，为了减小开销，我们并未真正的开辟了两个数组进行比较。
+    int s = start;
+    int s1 = start;
+    int ed1 = mid;
+    int s2 = mid + 1;
+    int ed2 = end;
+    while(s1 &lt;= ed1 &amp;&amp; s2 &lt;= ed2)&#123;
+        if(a[s1] &gt; a[s2])&#123;
+            t[s++] = a[s2++];
+        &#125;
+        else&#123;
+            t[s++] = a[s1++];
+        &#125;
+    &#125;
+    while(s1 &lt;= ed1)&#123;
+        t[s++] = a[s1++];
+    &#125;
+    while(s2 &lt;= ed2)&#123;
+        t[s++] = a[s2++];
+    &#125;
+&#125;</code></pre>
 <p>我们知道从各个子部分中间分割的话，所需的时间为<span
 class="math inline">\(LogN\)</span>，而随着每一次递归，我们都进行了一次合并，乘以合并所需的时间即<span
 class="math inline">\(NlogN\)</span>。</p>
