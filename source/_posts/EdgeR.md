@@ -2,11 +2,10 @@
 title: EdgeR查找差异表达基因
 date: 2021-09-27
 categories: 
-- 生信
+- Bioinformatics
 tags: 
 - RNA-Seq
 - DE-Analysis
-- EdgeR
 ---
 # EdgeR查找差异表达基因  
 内容主要来源：  
@@ -16,7 +15,7 @@ tags:
 
 癌症细胞：`Encode`上`NCI-H460`癌症细胞系`total RNA-Seq`数据，因为`Encode`已经给出了基因定量的数据文件，故无需再重复跑一次产出定量文件的流程。  
 正常细胞：仍然来自于`Encode`,选用的正常肺组织的`total RNA-Seq`的基因定量文件。  
-![](/EdgeR/1.png)   
+![](1.png)   
 
 ## 过程  
 ### 基因定量信息  
@@ -24,7 +23,7 @@ tags:
 
 所需的定量文件共两列，一列基因，一列基因的数量。从Encode上下载下来的文件内容是这样的:  
 
- ![](/EdgeR/2.png)  
+ ![](2.png)  
 
 ***Note that edgeR is designed to work with actual read counts. We not recommend that predicted transcript abundances are input the edgeR in place of actual counts.***  
 根据文档，要求我们使用初始的基因读数，这里使用了`gene_id`和`expected_count`两列组成EdgeR的输入数据文件。  
@@ -35,7 +34,7 @@ tags:
 > rep2=read.table("./NCI-H460.totalRNA.geneQA.rep2.tsv",header =  TRUE)  
 > norm1=read.table("./lung.toalRNA.geneQA.rep1.tsv",header =  TRUE)  
 > norm2=read.table("./lung.toalRNA.geneQA.rep2.tsv",header =  TRUE)  
-<!--more-->  
+
 <br />
 
 **提取所需两列:**  
@@ -56,20 +55,20 @@ tags:
 > row.names(count)=count$gene\_Id  
 > count=count[,-c(1)]  
 
-![](/EdgeR/3.png)  
+![](3.png)  
 
 **转换成DGEList类型：**  
 分组并转换：
 > group=c("norm","norm","cancer","cancer")  
 > y=DGEList(counts=count,group = group)  
 
-![](/EdgeR/4.png)  
+![](4.png)  
 如图上所示，rep1与rep2的lib.size的差异有点大。重新检查了下，确认并没有下载错误的文件，那么作为试水，继续进行下去吧。  
 
 **过滤低表达基因：**    
 从生物学的角度来看，一个基因必须在某种最低水平上表达，才有可能被翻译成蛋白质或具有生物学上的重要性。此外，这些计数的显著离散性也干扰了后面流程中使用的一些统计近似过程。  
 
-![](/EdgeR/5.png)  
+![](5.png)  
 
 直接用`filterByExpr`进行过滤:  
 
@@ -83,7 +82,7 @@ tags:
 EdgeR标准化没有将基因长度和GC含量作为主要因素，它把Sequencing depth和Effective library sizes作为标准化主要的方向。  
 
 直接进行标准化：`y = calcNormFactors(y)`  
-![](/EdgeR/6.png)  
+![](6.png)  
 
 `norm.factors`发生了变化。  
 
@@ -104,13 +103,13 @@ EdgeR标准化没有将基因长度和GC含量作为主要因素，它把Sequenc
 `y = estimateDisp(y)`  
 `et = exactTest(y)`  
 `topTags(et)`  
-![](/EdgeR/7.png)  
+![](7.png)  
 显示的是norm组和cancer组之间的靠前显著基因。  
 如果想要更进一步进行筛选的话，可以按照`et$table`中的四个列进行筛选。  
 如：logFC > 2 并且 p值 < 0.05  
 `ed = et$table[which(et$table$logFC > 2 & et$table$PValue < 0.05),]`  
 
-![](/EdgeR/8.png)  
+![](8.png)  
 
 **转换基因名**  
 来源：[https://github.com/twbattaglia/RNAseq-workflow](https://github.com/twbattaglia/RNAseq-workflow)  
@@ -120,7 +119,7 @@ EdgeR标准化没有将基因长度和GC含量作为主要因素，它把Sequenc
 `ed$symbol = sy`  
 
 *注意事项：转换的时候，ENSGXXXXXXXXXX.XX，需要去除小数点以及小数点后两位的数字。*  
-![](/EdgeR/9.png)  
+![](9.png)  
 
 ## 后续  
 1.下游分析（GO、KEGG）以及可视化（热图，火山图）。  

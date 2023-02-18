@@ -2,8 +2,9 @@
 title: 排序算法
 date: 2022-4-25
 mathjax: true
+toc: true
 categories: 
-- 算法
+- Algorithm
 tags: 
 - Algorithm
 ---  
@@ -25,8 +26,6 @@ https://blog.csdn.net/k_koris/article/details/80508543
 
 * 递归  
 递归的基本思想是某个函数直接或者间接地调用自身，这样原问题的求解就转换为了许多性质相同但是规模更小的子问题。求解时只需要关注如何把原问题划分成符合条件的子问题，而不需要过分关注这个子问题是如何被解决的。  
-
-<!--more-->  
 
 如：  
 ```  

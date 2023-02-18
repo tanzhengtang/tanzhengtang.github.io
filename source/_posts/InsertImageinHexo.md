@@ -5,7 +5,6 @@ categories:
 - Blog
 tags: 
 - Blog
-- Web
 ---
 # Hexo博客插入图片问题  
 *推送博客时遇到一个问题，图片无法顺利在网站中展现。*  
@@ -21,9 +20,7 @@ tags:
 > 在Typora编辑器中，普通的md文件使用`![](1/image.jpg)`能在编辑器中正常显示图片。
 > 在hexo中，按理说应该是使用`![](image.jpg)`，但网页中却无法正常显示。
 > 此时应该使用这样的方式来引入图片:`{% asset_img image.jpg 这是一张图片 %} `  
-<!--more-->  
 2.解决`{% asset_img image.jpg 这是一张图片 %} `这种难写的语法。`npm install hexo-renderer-marked`安装插件，并在`_config.yaml`中更改配置:  
-
 
 >post_asset_folder: true  
 >marked:  
@@ -31,5 +28,5 @@ tags:
 >postAsset: true  
 
 3.如果采用`![](image.jpg)`的方式，此时md文件和相应图片处于同一目录下，但是直接上传仍然无法成功在网站上插入图片，而是需要将md文件拿到上级目录，像这样  
-![](/InsertImageinHexo/insert.png)  
+![](insert.png)  
 如此的话，我们编写的时候可将md文件置于同一文件夹，编写完成时需将md文件拿到上级目录即可。  

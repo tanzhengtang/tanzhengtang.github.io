@@ -8,7 +8,7 @@ subtitle: 'Have Fun'
 description: 'Bioinformatics'
 keywords:
 author: Zhengtang Tan
-language: zh-CN
+language: en
 timezone: ''
 
 # URL
@@ -27,8 +27,8 @@ tag_dir: tags
 archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
-i18n_dir: :lang
-skip_render:
+i18n_dir: .lang
+skip_render: 
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -100,7 +100,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: pure
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
@@ -108,10 +108,6 @@ deploy:
   type: git
   repository: git@github.com:tanzhengtang/tanzhengtang.github.io.git
   branch: main
-
-math:
-  enable: true
-  engine: mathjax
 
 search:
   path: search.xml
@@ -129,3 +125,12 @@ markdown_it_plus:
     typographer:
     quotes: “”‘’
     pre_class: highlight
+    plugins: 
+      - '@iktakahiro/markdown-it-katex'
+      - markdown-it-emoji
+      # - plugin:
+      #   name: markdown-it-katex
+      #   enable: true
+      # - plugin:
+      #   name: markdown-it-mark
+      #   enable: false 

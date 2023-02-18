@@ -2,7 +2,7 @@
 title: 基数排序
 date: 2021-10-09
 categories: 
-- 算法
+- Algorithm
 tags: 
 - Algorithm
 - Math

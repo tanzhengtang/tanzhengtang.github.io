@@ -2,11 +2,10 @@
 title: EdgeR查找差异表达基因(二)
 date: 2021-10-22
 categories: 
-- 生信
+- Bioinformatics
 tags: 
 - RNA-Seq
 - DE-Analysis
-- EdgeR
 ---
 # EdgeR查找差异表达基因(二)  
 ## 前言  
@@ -27,7 +26,7 @@ tags:
 > rep4=read.table("./ENCFF103FSL.tsv",header=T)  
 > norm1=read.table("~/Project/Normal_tissue/Liver/RNA/ENCFF780YUS.tsv",header = T)  
 > norm2=read.table("~/Project/Normal_tissue/Liver/RNA/ENCFF846SOK.tsv",header = T)  
-<!--more-->  
+
 **处理gene_id:**  
 以rep1为例:  
 
@@ -46,7 +45,7 @@ tags:
 
 原始矩阵count:  
 
-![](/EdgeR(2)/1.png)  
+![](1.png)  
 
 **分组:**  
 
