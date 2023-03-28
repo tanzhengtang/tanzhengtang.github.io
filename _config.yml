@@ -102,6 +102,8 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: pure
 
+copyright: false
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
@@ -126,11 +128,27 @@ markdown_it_plus:
     quotes: “”‘’
     pre_class: highlight
     plugins: 
-      - '@iktakahiro/markdown-it-katex'
-      - markdown-it-emoji
-      # - plugin:
-      #   name: markdown-it-katex
-      #   enable: true
-      # - plugin:
-      #   name: markdown-it-mark
-      #   enable: false 
+      # - '@iktakahiro/markdown-it-katex'
+      # - markdown-it-emoji
+      - plugin:
+        name: markdown-it-katex
+        enable: true
+      - plugin:
+        name: markdown-it-mark
+        enable: false 
+
+neat_enable: true
+neat_html:
+  enable: true
+  exclude:  
+neat_css:
+  enable: true
+  exclude:
+    - '*.min.css'
+neat_js:
+  enable: true
+  mangle: true
+  output:
+  compress:
+  exclude:
+    - '*.min.js' 
