@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>https://tanzhengtang.github.io/2022/04/05/riskfunction/</loc>
+    <loc>https://tanzhengtang.github.io/2023/02/18/pusblogct/</loc>
     
     <lastmod>2023-03-25</lastmod>
     
@@ -29,7 +29,7 @@
   </url>
   
   <url>
-    <loc>https://tanzhengtang.github.io/2023/02/18/pusblogct/</loc>
+    <loc>https://tanzhengtang.github.io/2022/04/05/riskfunction/</loc>
     
     <lastmod>2023-03-25</lastmod>
     
@@ -112,57 +112,57 @@
 
   <url>
     <loc>https://tanzhengtang.github.io/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
+    <loc>https://tanzhengtang.github.io/tags/Blog/</loc>
+    <lastmod>2023-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://tanzhengtang.github.io/tags/RNA-Seq/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/tags/DE-Analysis/</loc>
-    <lastmod>2023-03-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://tanzhengtang.github.io/tags/Blog/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/tags/Math/</loc>
-    <lastmod>2023-03-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://tanzhengtang.github.io/tags/Deep-Learning/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/tags/Web/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://tanzhengtang.github.io/tags/Deep-Learning/</loc>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/tags/Algorithm/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -170,36 +170,36 @@
 
   
   <url>
-    <loc>https://tanzhengtang.github.io/categories/Bioinformatics/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <loc>https://tanzhengtang.github.io/categories/Blog/</loc>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://tanzhengtang.github.io/categories/Blog/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <loc>https://tanzhengtang.github.io/categories/Bioinformatics/</loc>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/categories/Math/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/categories/Statistical-Learning-Methods/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://tanzhengtang.github.io/categories/Algorithm/</loc>
-    <lastmod>2023-03-28</lastmod>
+    <lastmod>2023-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
