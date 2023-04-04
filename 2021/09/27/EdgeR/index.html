@@ -1,1 +1,482 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui"><meta name="renderer" content="webkit"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no,email=no,adress=no"><meta name="theme-color" content="#000000"><meta http-equiv="window-target" content="_top"><title>EdgeR查找差异表达基因 | Tan&#39;s Blog</title><meta name="description" content="EdgeR查找差异表达基因 内容主要来源： https:&#x2F;&#x2F;bioconductor.org&#x2F;packages&#x2F;release&#x2F;bioc&#x2F;vignettes&#x2F;edgeR&#x2F;inst&#x2F;doc&#x2F;edgeRUsersGuide.pdf（官方使用文档)  数据来源 癌症细胞：Encode上NCI-H460癌症细胞系total RNA-Seq数据，因为Encode已经给出了基因定量的数据文件，故无需再重复跑"><meta property="og:type" content="article"><meta property="og:title" content="EdgeR查找差异表达基因"><meta property="og:url" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/index.html"><meta property="og:site_name" content="Tan&#39;s Blog"><meta property="og:description" content="EdgeR查找差异表达基因 内容主要来源： https:&#x2F;&#x2F;bioconductor.org&#x2F;packages&#x2F;release&#x2F;bioc&#x2F;vignettes&#x2F;edgeR&#x2F;inst&#x2F;doc&#x2F;edgeRUsersGuide.pdf（官方使用文档)  数据来源 癌症细胞：Encode上NCI-H460癌症细胞系total RNA-Seq数据，因为Encode已经给出了基因定量的数据文件，故无需再重复跑"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/1.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/2.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/3.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/4.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/5.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/6.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/7.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/8.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/9.png"><meta property="article:published_time" content="2021-09-26T16:00:00.000Z"><meta property="article:modified_time" content="2023-03-25T09:15:32.934Z"><meta property="article:author" content="Zhengtang Tan"><meta property="article:tag" content="RNA-Seq"><meta property="article:tag" content="DE-Analysis"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/1.png"><link rel="canonical" href="https://tanzhengtang.github.io/2021/09/27/EdgeR/index.html"><link rel="icon" href="/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Tan's Blog" type="application/atom+xml"></head><body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage"><header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="slimContent"><div class="navbar-header"><div class="profile-block text-center"><a id="avatar" href="https://github.com/tanzhengtang" target="_blank"><img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200"></a><h2 id="name" class="hidden-xs hidden-sm">Tan</h2><h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3><small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Chengdu, China</small></div><div class="search" id="search-form-wrap"><form class="search-form sidebar-form"><div class="input-group"><input type="text" class="search-form-input form-control" placeholder="Search"> <span class="input-group-btn"><button type="submit" class="search-form-submit btn btn-flat" onclick="return!1"><i class="icon icon-search"></i></button></span></div></form><div class="ins-search"><div class="ins-search-mask"></div><div class="ins-search-container"><div class="ins-input-wrapper"><input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech> <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div><div class="ins-section-wrapper"><div class="ins-section-container"></div></div></div></div></div><button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button></div><nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation"><ul class="nav navbar-nav main-nav"><li class="menu-item menu-item-home"><a href="/."><i class="icon icon-home-fill"></i> <span class="menu-title">Home</span></a></li></ul><ul class="social-links"><li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li></ul></nav></div></header><aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar"><div class="slimContent"><div class="widget"><h3 class="widget-title">Board</h3><div class="widget-body"><div id="board"><div class="content"><p>A Bioinformatics Newbee Site</p></div></div></div></div><div class="widget"><h3 class="widget-title">Categories</h3><div class="widget-body"><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Bioinformatics/">Bioinformatics</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog/">Blog</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Math/">Math</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Statistical-Learning-Methods/">Statistical Learning Methods</a><span class="category-list-count">1</span></li></ul></div></div></div></aside><main class="main" role="main"><div class="content"><article id="post-EdgeR" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting"><div class="article-header"><h1 class="article-title" itemprop="name">EdgeR查找差异表达基因</h1><div class="article-meta"><span class="article-date"><i class="icon icon-calendar-check"></i> <a href="/2021/09/27/EdgeR/" class="article-date"><time datetime="2021-09-26T16:00:00.000Z" itemprop="datePublished">2021-09-27</time> </a></span><span class="article-category"><i class="icon icon-folder"></i> <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a> </span><span class="article-tag"><i class="icon icon-tags"></i> <a class="article-tag-link-link" href="/tags/DE-Analysis/" rel="tag">DE-Analysis</a>, <a class="article-tag-link-link" href="/tags/RNA-Seq/" rel="tag">RNA-Seq</a> </span><span class="article-read hidden-xs"><i class="icon icon-eye-fill" aria-hidden="true"></i> <span id="/2021/09/27/EdgeR/" class="leancloud_visitors" data-flag-title="EdgeR查找差异表达基因">0</span> </span><span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/27/EdgeR/#comments" class="article-comment-link">Comments</a></span> <span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 991(words)</span> <span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 4(minutes)</span></div></div><div class="article-entry marked-body" itemprop="articleBody"><h1 id="edger查找差异表达基因"><a class="markdownIt-Anchor" href="#edger查找差异表达基因"></a> EdgeR查找差异表达基因</h1><p>内容主要来源：<br><a target="_blank" rel="noopener" href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf</a>（官方使用文档)</p><h2 id="数据来源"><a class="markdownIt-Anchor" href="#数据来源"></a> 数据来源</h2><p>癌症细胞：<code>Encode</code>上<code>NCI-H460</code>癌症细胞系<code>total RNA-Seq</code>数据，因为<code>Encode</code>已经给出了基因定量的数据文件，故无需再重复跑一次产出定量文件的流程。<br>正常细胞：仍然来自于<code>Encode</code>,选用的正常肺组织的<code>total RNA-Seq</code>的基因定量文件。<br><img src="/2021/09/27/EdgeR/1.png" alt></p><h2 id="过程"><a class="markdownIt-Anchor" href="#过程"></a> 过程</h2><h3 id="基因定量信息"><a class="markdownIt-Anchor" href="#基因定量信息"></a> 基因定量信息</h3><p><em><strong>Files need to contain two columns, one for the counts and one for a gene identifier.</strong></em></p><p>所需的定量文件共两列，一列基因，一列基因的数量。从Encode上下载下来的文件内容是这样的:</p><p><img src="/2021/09/27/EdgeR/2.png" alt></p><p><em><strong>Note that edgeR is designed to work with actual read counts. We not recommend that predicted transcript abundances are input the edgeR in place of actual counts.</strong></em><br>根据文档，要求我们使用初始的基因读数，这里使用了<code>gene_id</code>和<code>expected_count</code>两列组成EdgeR的输入数据文件。<br><br><br><strong>读入初始数据:</strong></p><blockquote><p>rep1=read.table(“./NCI-H460.totalRNA.geneQA.rep1.tsv”,header = TRUE)<br>rep2=read.table(“./NCI-H460.totalRNA.geneQA.rep2.tsv”,header = TRUE)<br>norm1=read.table(“./lung.toalRNA.geneQA.rep1.tsv”,header = TRUE)<br>norm2=read.table(“./lung.toalRNA.geneQA.rep2.tsv”,header = TRUE)</p></blockquote><br><p><strong>提取所需两列:</strong></p><blockquote><p>rep1=rep1[,1:5]<br>rep1=rep1[,-c(2:4)]</p></blockquote><p>其他rep2、norm1、norm2按照同样操作即可。</p><p><strong>汇成总表：</strong></p><blockquote><p>count=merge(norm1,norm2,by=“gene_id”)<br>colnames(count)=c(“gene_id”,“nomr1”,“norm2”)<br>count=merge(count,rep1,by=‘gene_id’)<br>count=merge(count,rep2,by=‘gene_id’)<br>colnames(count)=c(‘gene_Id’,‘norm1’,‘norm2’,‘rep1’,‘rep2’)<br>row.names(count)=count$gene_Id<br>count=count[,-c(1)]</p></blockquote><p><img src="/2021/09/27/EdgeR/3.png" alt></p><p><strong>转换成DGEList类型：</strong><br>分组并转换：</p><blockquote><p>group=c(“norm”,“norm”,“cancer”,“cancer”)<br>y=DGEList(counts=count,group = group)</p></blockquote><p><img src="/2021/09/27/EdgeR/4.png" alt><br>如图上所示，rep1与rep2的lib.size的差异有点大。重新检查了下，确认并没有下载错误的文件，那么作为试水，继续进行下去吧。</p><p><strong>过滤低表达基因：</strong><br>从生物学的角度来看，一个基因必须在某种最低水平上表达，才有可能被翻译成蛋白质或具有生物学上的重要性。此外，这些计数的显著离散性也干扰了后面流程中使用的一些统计近似过程。</p><p><img src="/2021/09/27/EdgeR/5.png" alt></p><p>直接用<code>filterByExpr</code>进行过滤:</p><blockquote><p>keep=filterByExpr(y,group = group)<br>y=y[keep,keep.lib.sizes=FALSE]</p></blockquote><p><em>keep应该是逻辑类型的向量，它其中代表的意义是哪些基因应该留下来，哪些基因该被筛选出去，故有第二步，需要根据keep对y做处理，才是真正意义上的筛选。</em></p><h3 id="normalization标准化"><a class="markdownIt-Anchor" href="#normalization标准化"></a> Normalization（标准化)</h3><p>此时y中的样本之间仍然无法进行比较，样本的表达量是在相对不同的条件下测得的，而我们又恰恰需要观察样本之间本身的差异，需要将它们标准化。<br>EdgeR标准化没有将基因长度和GC含量作为主要因素，它把Sequencing depth和Effective library sizes作为标准化主要的方向。</p><p>直接进行标准化：<code>y = calcNormFactors(y)</code><br><img src="/2021/09/27/EdgeR/6.png" alt></p><p><code>norm.factors</code>发生了变化。</p><p><em>We call the product of the original library size and the scaling factor the effective library size. The effective library size replaces the original library size in all downsteam analyses</em></p><p>在下面的分析中都是以这个<code>effective library size</code>为准。</p><p><code>effective library size = original library size * norm.factors</code></p><h3 id="查找差异基因"><a class="markdownIt-Anchor" href="#查找差异基因"></a> 查找差异基因</h3><p><strong>经典的edgeR分析：</strong></p><p><em>edgeR uses the quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor</em></p><p>该方法适用于单因子。<br>直接上命令:<br><code>y = estimateDisp(y)</code><br><code>et = exactTest(y)</code><br><code>topTags(et)</code><br><img src="/2021/09/27/EdgeR/7.png" alt><br>显示的是norm组和cancer组之间的靠前显著基因。<br>如果想要更进一步进行筛选的话，可以按照<code>et$table</code>中的四个列进行筛选。<br>如：logFC &gt; 2 并且 p值 &lt; 0.05<br><code>ed = et$table[which(et$table$logFC &gt; 2 &amp; et$table$PValue &lt; 0.05),]</code></p><p><img src="/2021/09/27/EdgeR/8.png" alt></p><p><strong>转换基因名</strong><br>来源：<a target="_blank" rel="noopener" href="https://github.com/twbattaglia/RNAseq-workflow">https://github.com/twbattaglia/RNAseq-workflow</a></p><p><code>library(org.Hs.eg.db)</code><br><code>sy = mapIds(x = org.Hs.eg.db,keys = substr(row.names(ed),1,15),keytype = 'ENSEMBL',column = 'SYMBOL',multiVals = 'first')</code><br><code>ed$symbol = sy</code></p><p><em>注意事项：转换的时候，ENSGXXXXXXXXXX.XX，需要去除小数点以及小数点后两位的数字。</em><br><img src="/2021/09/27/EdgeR/9.png" alt></p><h2 id="后续"><a class="markdownIt-Anchor" href="#后续"></a> 后续</h2><p>1.下游分析（GO、KEGG）以及可视化（热图，火山图）。<br>2.原理（长期）。</p></div><div class="article-footer"><div class="panel panel-default panel-badger"><div class="panel-body"><figure class="media"><div class="media-left"><a href="https://github.com/tanzhengtang" target="_blank" class="img-burn thumb-sm visible-lg"><img src="/images/avatar.jpg" class="img-rounded w-full" alt=""></a></div><div class="media-body"><h3 class="media-heading"><a href="https://github.com/tanzhengtang" target="_blank"><span class="text-dark">Tan</span><small class="ml-1x"></small></a></h3><div>Novice Bioinformatics Prcatitioners</div></div></figure></div></div></div></article><section id="comments"><div id="vcomments"></div></section></div><nav class="bar bar-footer clearfix" data-stick-bottom><div class="bar-inner"><ul class="pager pull-left"><li class="prev"><a href="/2021/10/09/Algorithm/radix-sort/" title="基数排序"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a></li><li class="next"><a href="/2021/09/27/PrincipleOfEdgeR/" title="EdgeR原理探究"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a></li></ul><div class="bar-right"><div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div></div></div></nav></main><footer class="footer" itemscope itemtype="http://schema.org/WPFooter"><ul class="social-links"><li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li></ul><div class="copyright">&copy; 2023 Zhengtang Tan</div></footer><script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script><script>window.jQuery||document.write('<script src="js/jquery.min.js"><\/script>')</script><script src="/js/plugin.min.js"></script><script src="/js/application.js"></script><script>window.INSIGHT_CONFIG={TRANSLATION:{POSTS:"Posts",PAGES:"Pages",CATEGORIES:"Categories",TAGS:"Tags",UNTITLED:"(Untitled)"},ROOT_URL:"/",CONTENT_URL:"/content.json"}</script><script src="/js/insight.js"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/npm/valine"></script><script type="text/javascript">var GUEST=["nick","mail","link"],meta=(meta="nick,mail,link").split(",").filter(function(e){return-1<GUEST.indexOf(e)});new Valine({el:"#vcomments",verify:!1,notify:!1,appId:"YjBymcMiGsjo3pWP3tw28vfR-gzGzoHsz",appKey:"1svA3cllqE0cfrMPv2m1w8po",placeholder:"Just say something",avatar:"mp",meta:meta,pageSize:"10",visitor:!0,lang:"en"})</script></body></html>
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>EdgeR查找差异表达基因 | Tan&#39;s Blog</title>
+  <meta name="description" content="EdgeR查找差异表达基因 内容主要来源： https:&#x2F;&#x2F;bioconductor.org&#x2F;packages&#x2F;release&#x2F;bioc&#x2F;vignettes&#x2F;edgeR&#x2F;inst&#x2F;doc&#x2F;edgeRUsersGuide.pdf（官方使用文档)  数据来源 癌症细胞：Encode上NCI-H460癌症细胞系total RNA-Seq数据，因为Encode已经给出了基因定量的数据文件，故无需再重复跑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EdgeR查找差异表达基因">
+<meta property="og:url" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/index.html">
+<meta property="og:site_name" content="Tan&#39;s Blog">
+<meta property="og:description" content="EdgeR查找差异表达基因 内容主要来源： https:&#x2F;&#x2F;bioconductor.org&#x2F;packages&#x2F;release&#x2F;bioc&#x2F;vignettes&#x2F;edgeR&#x2F;inst&#x2F;doc&#x2F;edgeRUsersGuide.pdf（官方使用文档)  数据来源 癌症细胞：Encode上NCI-H460癌症细胞系total RNA-Seq数据，因为Encode已经给出了基因定量的数据文件，故无需再重复跑">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/1.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/2.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/3.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/4.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/5.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/6.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/7.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/8.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/9.png">
+<meta property="article:published_time" content="2021-09-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-25T09:15:32.934Z">
+<meta property="article:author" content="Zhengtang Tan">
+<meta property="article:tag" content="RNA-Seq">
+<meta property="article:tag" content="DE-Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tanzhengtang.github.io/2021/09/27/EdgeR/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://tanzhengtang.github.io/2021/09/27/EdgeR/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Tan's Blog" type="application/atom+xml">
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/tanzhengtang" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Tan</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Chengdu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>A Bioinformatics Newbee Site</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Bioinformatics/">Bioinformatics</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog/">Blog</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Math/">Math</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Statistical-Learning-Methods/">Statistical Learning Methods</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-EdgeR" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      EdgeR查找差异表达基因
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/09/27/EdgeR/" class="article-date">
+	  <time datetime="2021-09-26T16:00:00.000Z" itemprop="datePublished">2021-09-27</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/DE-Analysis/" rel="tag">DE-Analysis</a>, <a class="article-tag-link-link" href="/tags/RNA-Seq/" rel="tag">RNA-Seq</a>
+  </span>
+
+
+        
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2021/09/27/EdgeR/" class="leancloud_visitors"  data-flag-title="EdgeR查找差异表达基因">0</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/27/EdgeR/#comments" class="article-comment-link">Comments</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 991(words)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 4(minutes)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="edger查找差异表达基因"><a class="markdownIt-Anchor" href="#edger查找差异表达基因"></a> EdgeR查找差异表达基因</h1>
+<p>内容主要来源：<br>
+<a target="_blank" rel="noopener" href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf</a>（官方使用文档)</p>
+<h2 id="数据来源"><a class="markdownIt-Anchor" href="#数据来源"></a> 数据来源</h2>
+<p>癌症细胞：<code>Encode</code>上<code>NCI-H460</code>癌症细胞系<code>total RNA-Seq</code>数据，因为<code>Encode</code>已经给出了基因定量的数据文件，故无需再重复跑一次产出定量文件的流程。<br>
+正常细胞：仍然来自于<code>Encode</code>,选用的正常肺组织的<code>total RNA-Seq</code>的基因定量文件。<br>
+<img src="/2021/09/27/EdgeR/1.png" alt></p>
+<h2 id="过程"><a class="markdownIt-Anchor" href="#过程"></a> 过程</h2>
+<h3 id="基因定量信息"><a class="markdownIt-Anchor" href="#基因定量信息"></a> 基因定量信息</h3>
+<p><em><strong>Files need to contain two columns, one for the counts and one for a gene identifier.</strong></em></p>
+<p>所需的定量文件共两列，一列基因，一列基因的数量。从Encode上下载下来的文件内容是这样的:</p>
+<p><img src="/2021/09/27/EdgeR/2.png" alt></p>
+<p><em><strong>Note that edgeR is designed to work with actual read counts. We not recommend that predicted transcript abundances are input the edgeR in place of actual counts.</strong></em><br>
+根据文档，要求我们使用初始的基因读数，这里使用了<code>gene_id</code>和<code>expected_count</code>两列组成EdgeR的输入数据文件。<br>
+<br><br>
+<strong>读入初始数据:</strong></p>
+<blockquote>
+<p>rep1=read.table(“./NCI-H460.totalRNA.geneQA.rep1.tsv”,header =  TRUE)<br>
+rep2=read.table(“./NCI-H460.totalRNA.geneQA.rep2.tsv”,header =  TRUE)<br>
+norm1=read.table(“./lung.toalRNA.geneQA.rep1.tsv”,header =  TRUE)<br>
+norm2=read.table(“./lung.toalRNA.geneQA.rep2.tsv”,header =  TRUE)</p>
+</blockquote>
+<br>
+<p><strong>提取所需两列:</strong></p>
+<blockquote>
+<p>rep1=rep1[,1:5]<br>
+rep1=rep1[,-c(2:4)]</p>
+</blockquote>
+<p>其他rep2、norm1、norm2按照同样操作即可。</p>
+<p><strong>汇成总表：</strong></p>
+<blockquote>
+<p>count=merge(norm1,norm2,by=“gene_id”)<br>
+colnames(count)=c(“gene_id”,“nomr1”,“norm2”)<br>
+count=merge(count,rep1,by=‘gene_id’)<br>
+count=merge(count,rep2,by=‘gene_id’)<br>
+colnames(count)=c(‘gene_Id’,‘norm1’,‘norm2’,‘rep1’,‘rep2’)<br>
+row.names(count)=count$gene_Id<br>
+count=count[,-c(1)]</p>
+</blockquote>
+<p><img src="/2021/09/27/EdgeR/3.png" alt></p>
+<p><strong>转换成DGEList类型：</strong><br>
+分组并转换：</p>
+<blockquote>
+<p>group=c(“norm”,“norm”,“cancer”,“cancer”)<br>
+y=DGEList(counts=count,group = group)</p>
+</blockquote>
+<p><img src="/2021/09/27/EdgeR/4.png" alt><br>
+如图上所示，rep1与rep2的lib.size的差异有点大。重新检查了下，确认并没有下载错误的文件，那么作为试水，继续进行下去吧。</p>
+<p><strong>过滤低表达基因：</strong><br>
+从生物学的角度来看，一个基因必须在某种最低水平上表达，才有可能被翻译成蛋白质或具有生物学上的重要性。此外，这些计数的显著离散性也干扰了后面流程中使用的一些统计近似过程。</p>
+<p><img src="/2021/09/27/EdgeR/5.png" alt></p>
+<p>直接用<code>filterByExpr</code>进行过滤:</p>
+<blockquote>
+<p>keep=filterByExpr(y,group = group)<br>
+y=y[keep,keep.lib.sizes=FALSE]</p>
+</blockquote>
+<p><em>keep应该是逻辑类型的向量，它其中代表的意义是哪些基因应该留下来，哪些基因该被筛选出去，故有第二步，需要根据keep对y做处理，才是真正意义上的筛选。</em></p>
+<h3 id="normalization标准化"><a class="markdownIt-Anchor" href="#normalization标准化"></a> Normalization（标准化)</h3>
+<p>此时y中的样本之间仍然无法进行比较，样本的表达量是在相对不同的条件下测得的，而我们又恰恰需要观察样本之间本身的差异，需要将它们标准化。<br>
+EdgeR标准化没有将基因长度和GC含量作为主要因素，它把Sequencing depth和Effective library sizes作为标准化主要的方向。</p>
+<p>直接进行标准化：<code>y = calcNormFactors(y)</code><br>
+<img src="/2021/09/27/EdgeR/6.png" alt></p>
+<p><code>norm.factors</code>发生了变化。</p>
+<p><em>We call the product of the original library size and the scaling factor the effective library size. The effective library size replaces the original library size in all downsteam analyses</em></p>
+<p>在下面的分析中都是以这个<code>effective library size</code>为准。</p>
+<p><code>effective library size = original library size * norm.factors</code></p>
+<h3 id="查找差异基因"><a class="markdownIt-Anchor" href="#查找差异基因"></a> 查找差异基因</h3>
+<p><strong>经典的edgeR分析：</strong></p>
+<p><em>edgeR uses the quantile-adjusted conditional maximum likelihood (qCML) method for experiments with single factor</em></p>
+<p>该方法适用于单因子。<br>
+直接上命令:<br>
+<code>y = estimateDisp(y)</code><br>
+<code>et = exactTest(y)</code><br>
+<code>topTags(et)</code><br>
+<img src="/2021/09/27/EdgeR/7.png" alt><br>
+显示的是norm组和cancer组之间的靠前显著基因。<br>
+如果想要更进一步进行筛选的话，可以按照<code>et$table</code>中的四个列进行筛选。<br>
+如：logFC &gt; 2 并且 p值 &lt; 0.05<br>
+<code>ed = et$table[which(et$table$logFC &gt; 2 &amp; et$table$PValue &lt; 0.05),]</code></p>
+<p><img src="/2021/09/27/EdgeR/8.png" alt></p>
+<p><strong>转换基因名</strong><br>
+来源：<a target="_blank" rel="noopener" href="https://github.com/twbattaglia/RNAseq-workflow">https://github.com/twbattaglia/RNAseq-workflow</a></p>
+<p><code>library(org.Hs.eg.db)</code><br>
+<code>sy = mapIds(x = org.Hs.eg.db,keys = substr(row.names(ed),1,15),keytype = 'ENSEMBL',column = 'SYMBOL',multiVals = 'first')</code><br>
+<code>ed$symbol = sy</code></p>
+<p><em>注意事项：转换的时候，ENSGXXXXXXXXXX.XX，需要去除小数点以及小数点后两位的数字。</em><br>
+<img src="/2021/09/27/EdgeR/9.png" alt></p>
+<h2 id="后续"><a class="markdownIt-Anchor" href="#后续"></a> 后续</h2>
+<p>1.下游分析（GO、KEGG）以及可视化（热图，火山图）。<br>
+2.原理（长期）。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!-- <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://tanzhengtang.github.io/2021/09/27/EdgeR/" title="EdgeR查找差异表达基因" target="_blank" rel="external">https://tanzhengtang.github.io/2021/09/27/EdgeR/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote> -->
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/tanzhengtang" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/tanzhengtang" target="_blank"><span class="text-dark">Tan</span><small class="ml-1x"></small></a></h3>
+        <div>Novice Bioinformatics Prcatitioners</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/10/09/Algorithm/insertion-sort/" title="插入排序"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/09/27/PrincipleOfEdgeR/" title="EdgeR原理探究"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2023 Zhengtang Tan
+        
+        <!-- <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div> -->
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'YjBymcMiGsjo3pWP3tw28vfR-gzGzoHsz',
+    appKey: '1svA3cllqE0cfrMPv2m1w8po',
+    placeholder: 'Just say something',
+    avatar: 'mp',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'en'
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

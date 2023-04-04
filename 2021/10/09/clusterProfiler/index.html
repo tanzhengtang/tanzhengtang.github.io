@@ -1,1 +1,436 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui"><meta name="renderer" content="webkit"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="format-detection" content="telephone=no,email=no,adress=no"><meta name="theme-color" content="#000000"><meta http-equiv="window-target" content="_top"><title>clusterProfiler进行GO、KEGG以及相应的可视化 | Tan&#39;s Blog</title><meta name="description" content="clusterProfiler进行GO、KEGG以及相应的可视化 内容主要来源： https:&#x2F;&#x2F;guangchuangyu.github.io&#x2F;softwaredocumentation&#x2F;（官方使用文档)  数据来源 差异基因列表：NCI-H460癌症细胞同正常组织之间的差异基因。 承接自这篇笔记中:EdgeR查找差异表达基因  过程  GO分析 代码: ego &lt;- enrichGO("><meta property="og:type" content="article"><meta property="og:title" content="clusterProfiler进行GO、KEGG以及相应的可视化"><meta property="og:url" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/index.html"><meta property="og:site_name" content="Tan&#39;s Blog"><meta property="og:description" content="clusterProfiler进行GO、KEGG以及相应的可视化 内容主要来源： https:&#x2F;&#x2F;guangchuangyu.github.io&#x2F;softwaredocumentation&#x2F;（官方使用文档)  数据来源 差异基因列表：NCI-H460癌症细胞同正常组织之间的差异基因。 承接自这篇笔记中:EdgeR查找差异表达基因  过程  GO分析 代码: ego &lt;- enrichGO("><meta property="og:locale" content="en_US"><meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/1.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/2.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/3.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/4.png"><meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/5.png"><meta property="article:published_time" content="2021-10-08T16:00:00.000Z"><meta property="article:modified_time" content="2023-03-25T09:15:32.942Z"><meta property="article:author" content="Zhengtang Tan"><meta property="article:tag" content="RNA-Seq"><meta property="article:tag" content="DE-Analysis"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/1.png"><link rel="canonical" href="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/index.html"><link rel="icon" href="/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Tan's Blog" type="application/atom+xml"></head><body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage"><header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="slimContent"><div class="navbar-header"><div class="profile-block text-center"><a id="avatar" href="https://github.com/tanzhengtang" target="_blank"><img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200"></a><h2 id="name" class="hidden-xs hidden-sm">Tan</h2><h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3><small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Chengdu, China</small></div><div class="search" id="search-form-wrap"><form class="search-form sidebar-form"><div class="input-group"><input type="text" class="search-form-input form-control" placeholder="Search"> <span class="input-group-btn"><button type="submit" class="search-form-submit btn btn-flat" onclick="return!1"><i class="icon icon-search"></i></button></span></div></form><div class="ins-search"><div class="ins-search-mask"></div><div class="ins-search-container"><div class="ins-input-wrapper"><input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech> <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div><div class="ins-section-wrapper"><div class="ins-section-container"></div></div></div></div></div><button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button></div><nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation"><ul class="nav navbar-nav main-nav"><li class="menu-item menu-item-home"><a href="/."><i class="icon icon-home-fill"></i> <span class="menu-title">Home</span></a></li></ul><ul class="social-links"><li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li></ul></nav></div></header><aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar"><div class="slimContent"><div class="widget"><h3 class="widget-title">Board</h3><div class="widget-body"><div id="board"><div class="content"><p>A Bioinformatics Newbee Site</p></div></div></div></div><div class="widget"><h3 class="widget-title">Categories</h3><div class="widget-body"><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Bioinformatics/">Bioinformatics</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog/">Blog</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Math/">Math</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Statistical-Learning-Methods/">Statistical Learning Methods</a><span class="category-list-count">1</span></li></ul></div></div></div></aside><main class="main" role="main"><div class="content"><article id="post-clusterProfiler" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting"><div class="article-header"><h1 class="article-title" itemprop="name">clusterProfiler进行GO、KEGG以及相应的可视化</h1><div class="article-meta"><span class="article-date"><i class="icon icon-calendar-check"></i> <a href="/2021/10/09/clusterProfiler/" class="article-date"><time datetime="2021-10-08T16:00:00.000Z" itemprop="datePublished">2021-10-09</time> </a></span><span class="article-category"><i class="icon icon-folder"></i> <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a> </span><span class="article-tag"><i class="icon icon-tags"></i> <a class="article-tag-link-link" href="/tags/DE-Analysis/" rel="tag">DE-Analysis</a>, <a class="article-tag-link-link" href="/tags/RNA-Seq/" rel="tag">RNA-Seq</a> </span><span class="article-read hidden-xs"><i class="icon icon-eye-fill" aria-hidden="true"></i> <span id="/2021/10/09/clusterProfiler/" class="leancloud_visitors" data-flag-title="clusterProfiler进行GO、KEGG以及相应的可视化">0</span> </span><span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/10/09/clusterProfiler/#comments" class="article-comment-link">Comments</a></span> <span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 437(words)</span> <span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 1(minutes)</span></div></div><div class="article-entry marked-body" itemprop="articleBody"><h1 id="clusterprofiler进行go-kegg以及相应的可视化"><a class="markdownIt-Anchor" href="#clusterprofiler进行go-kegg以及相应的可视化"></a> clusterProfiler进行GO、KEGG以及相应的可视化</h1><p>内容主要来源：<br><a target="_blank" rel="noopener" href="https://guangchuangyu.github.io/softwaredocumentation/">https://guangchuangyu.github.io/softwaredocumentation/</a>（官方使用文档)</p><h2 id="数据来源"><a class="markdownIt-Anchor" href="#数据来源"></a> 数据来源</h2><p><strong>差异基因列表：</strong><code>NCI-H460</code>癌症细胞同正常组织之间的差异基因。<br>承接自这篇笔记中:<a href="https://tanzhengtang.github.io/2021/09/27/EdgeR/">EdgeR查找差异表达基因</a></p><h2 id="过程"><a class="markdownIt-Anchor" href="#过程"></a> 过程</h2><h3 id="go分析"><a class="markdownIt-Anchor" href="#go分析"></a> GO分析</h3><p><strong>代码:</strong><br><code>ego &lt;- enrichGO(gene = idt,OrgDb = org.Hs.eg.db,keyType = 'ENSEMBL',ont = &quot;ALL&quot;,pAdjustMethod = &quot;BH&quot;,pvalueCutoff = 0.01,qvalueCutoff = 0.05,readable = T)</code><br><strong>gene是得到的差异基因列表.<br>keyType指定基因ID的类型,默认为ENTREZID.<br>OrgDb指定该物种对应的org包的名字.<br>ont代表GO的3大类别，BP, CC, MF,而ALL是将该3类一起包含.<br>pAdjustMethod指定多重假设检验矫正的方法.<br>cufoff指定对应的阈值.<br>readable=TRUE将基因ID转换为gene symbol.</strong><br><em>idt</em> 差异基因列表:<br><img src="/2021/10/09/clusterProfiler/1.png" alt><br>这样就可以直接出图了。<br><code>dotplot(ego,showCategory = 10)</code><br><img src="/2021/10/09/clusterProfiler/2.png" alt><br><code>barplot(ego,showCategory = 10)</code><br><img src="/2021/10/09/clusterProfiler/3.png" alt></p><h3 id="kegg分析"><a class="markdownIt-Anchor" href="#kegg分析"></a> KEGG分析</h3><p>在代码方面同GO分析差不多:<br><code>kk=enrichKEGG(te$entrzid,organism=&quot;hsa&quot;, pvalueCutoff=0.05,pAdjustMethod=&quot;BH&quot;,qvalueCutoff=0.1)</code><br><code>kk=setReadable(kk,OrgDb = org.Hs.eg.db,keyType = 'ENTREZID')</code><br>经尝试，KEGG分析似乎不支持ENSEMBL的ID，所以运行上面之前先转换成ENTRZID:<br><code>en=mapIds(x = org.Hs.eg.db,keys = ed$symbol,keytype = &quot;SYMBOL&quot;,column = &quot;ENTREZID&quot;)</code><br><code>ed$entrzid=en</code><br><code>te=na.omit(ed)</code><br>出图：<br><code>barplot(kk,ddrop=T,showCategory =10,title=&quot;KEGG Enrichment Pathways&quot;)</code><br><img src="/2021/10/09/clusterProfiler/4.png" alt></p><p><strong>额外的pathview图：</strong><br>内容来源:<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1539928">https://cloud.tencent.com/developer/article/1539928</a><br><code>genem=tee$logFC</code><br><code>names(genem)=row.names(tee)</code><br><code>pathview(gene.data = genem,pathway.id = '04514',species = 'hsa')</code><br><code>pathway.id</code>是信号通路的id，如04514意味着Cell adhesion molecules通路，画出的是该样本在某通路上的基因表达量变化。<br><code>gene.data</code>是样本的表达量，这个可以是foldchange,也可以是cpm等等。<br><code>genem</code>的行名须是ENTRZID.<br><code>species</code>是种类。<br><img src="/2021/10/09/clusterProfiler/5.png" alt></p><h2 id="后续"><a class="markdownIt-Anchor" href="#后续"></a> 后续</h2><p>1.原理（长期）。</p></div><div class="article-footer"><div class="panel panel-default panel-badger"><div class="panel-body"><figure class="media"><div class="media-left"><a href="https://github.com/tanzhengtang" target="_blank" class="img-burn thumb-sm visible-lg"><img src="/images/avatar.jpg" class="img-rounded w-full" alt=""></a></div><div class="media-body"><h3 class="media-heading"><a href="https://github.com/tanzhengtang" target="_blank"><span class="text-dark">Tan</span><small class="ml-1x"></small></a></h3><div>Novice Bioinformatics Prcatitioners</div></div></figure></div></div></div></article><section id="comments"><div id="vcomments"></div></section></div><nav class="bar bar-footer clearfix" data-stick-bottom><div class="bar-inner"><ul class="pager pull-left"><li class="prev"><a href="/2021/10/22/EdgeR(2)/" title="EdgeR查找差异表达基因(二)"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a></li><li class="next"><a href="/2021/10/09/Algorithm/insertion-sort/" title="插入排序"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a></li></ul><div class="bar-right"><div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div></div></div></nav></main><footer class="footer" itemscope itemtype="http://schema.org/WPFooter"><ul class="social-links"><li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li></ul><div class="copyright">&copy; 2023 Zhengtang Tan</div></footer><script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script><script>window.jQuery||document.write('<script src="js/jquery.min.js"><\/script>')</script><script src="/js/plugin.min.js"></script><script src="/js/application.js"></script><script>window.INSIGHT_CONFIG={TRANSLATION:{POSTS:"Posts",PAGES:"Pages",CATEGORIES:"Categories",TAGS:"Tags",UNTITLED:"(Untitled)"},ROOT_URL:"/",CONTENT_URL:"/content.json"}</script><script src="/js/insight.js"></script><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/npm/valine"></script><script type="text/javascript">var GUEST=["nick","mail","link"],meta=(meta="nick,mail,link").split(",").filter(function(e){return-1<GUEST.indexOf(e)});new Valine({el:"#vcomments",verify:!1,notify:!1,appId:"YjBymcMiGsjo3pWP3tw28vfR-gzGzoHsz",appKey:"1svA3cllqE0cfrMPv2m1w8po",placeholder:"Just say something",avatar:"mp",meta:meta,pageSize:"10",visitor:!0,lang:"en"})</script></body></html>
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>clusterProfiler进行GO、KEGG以及相应的可视化 | Tan&#39;s Blog</title>
+  <meta name="description" content="clusterProfiler进行GO、KEGG以及相应的可视化 内容主要来源： https:&#x2F;&#x2F;guangchuangyu.github.io&#x2F;softwaredocumentation&#x2F;（官方使用文档)  数据来源 差异基因列表：NCI-H460癌症细胞同正常组织之间的差异基因。 承接自这篇笔记中:EdgeR查找差异表达基因  过程  GO分析 代码: ego &lt;- enrichGO(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="clusterProfiler进行GO、KEGG以及相应的可视化">
+<meta property="og:url" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/index.html">
+<meta property="og:site_name" content="Tan&#39;s Blog">
+<meta property="og:description" content="clusterProfiler进行GO、KEGG以及相应的可视化 内容主要来源： https:&#x2F;&#x2F;guangchuangyu.github.io&#x2F;softwaredocumentation&#x2F;（官方使用文档)  数据来源 差异基因列表：NCI-H460癌症细胞同正常组织之间的差异基因。 承接自这篇笔记中:EdgeR查找差异表达基因  过程  GO分析 代码: ego &lt;- enrichGO(">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/1.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/2.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/3.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/4.png">
+<meta property="og:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/5.png">
+<meta property="article:published_time" content="2021-10-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-25T09:15:32.942Z">
+<meta property="article:author" content="Zhengtang Tan">
+<meta property="article:tag" content="RNA-Seq">
+<meta property="article:tag" content="DE-Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Tan's Blog" type="application/atom+xml">
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/tanzhengtang" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Tan</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Chengdu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>A Bioinformatics Newbee Site</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Bioinformatics/">Bioinformatics</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog/">Blog</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Math/">Math</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Statistical-Learning-Methods/">Statistical Learning Methods</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-clusterProfiler" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      clusterProfiler进行GO、KEGG以及相应的可视化
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/10/09/clusterProfiler/" class="article-date">
+	  <time datetime="2021-10-08T16:00:00.000Z" itemprop="datePublished">2021-10-09</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Bioinformatics/">Bioinformatics</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/DE-Analysis/" rel="tag">DE-Analysis</a>, <a class="article-tag-link-link" href="/tags/RNA-Seq/" rel="tag">RNA-Seq</a>
+  </span>
+
+
+        
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2021/10/09/clusterProfiler/" class="leancloud_visitors"  data-flag-title="clusterProfiler进行GO、KEGG以及相应的可视化">0</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/10/09/clusterProfiler/#comments" class="article-comment-link">Comments</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 437(words)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 1(minutes)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="clusterprofiler进行go-kegg以及相应的可视化"><a class="markdownIt-Anchor" href="#clusterprofiler进行go-kegg以及相应的可视化"></a> clusterProfiler进行GO、KEGG以及相应的可视化</h1>
+<p>内容主要来源：<br>
+<a target="_blank" rel="noopener" href="https://guangchuangyu.github.io/softwaredocumentation/">https://guangchuangyu.github.io/softwaredocumentation/</a>（官方使用文档)</p>
+<h2 id="数据来源"><a class="markdownIt-Anchor" href="#数据来源"></a> 数据来源</h2>
+<p><strong>差异基因列表：</strong><code>NCI-H460</code>癌症细胞同正常组织之间的差异基因。<br>
+承接自这篇笔记中:<a href="https://tanzhengtang.github.io/2021/09/27/EdgeR/">EdgeR查找差异表达基因</a></p>
+<h2 id="过程"><a class="markdownIt-Anchor" href="#过程"></a> 过程</h2>
+<h3 id="go分析"><a class="markdownIt-Anchor" href="#go分析"></a> GO分析</h3>
+<p><strong>代码:</strong><br>
+<code>ego &lt;- enrichGO(gene = idt,OrgDb = org.Hs.eg.db,keyType = 'ENSEMBL',ont = &quot;ALL&quot;,pAdjustMethod = &quot;BH&quot;,pvalueCutoff = 0.01,qvalueCutoff  = 0.05,readable = T)</code><br>
+<strong>gene是得到的差异基因列表.<br>
+keyType指定基因ID的类型,默认为ENTREZID.<br>
+OrgDb指定该物种对应的org包的名字.<br>
+ont代表GO的3大类别，BP, CC, MF,而ALL是将该3类一起包含.<br>
+pAdjustMethod指定多重假设检验矫正的方法.<br>
+cufoff指定对应的阈值.<br>
+readable=TRUE将基因ID转换为gene symbol.</strong><br>
+<em>idt</em> 差异基因列表:<br>
+<img src="/2021/10/09/clusterProfiler/1.png" alt><br>
+这样就可以直接出图了。<br>
+<code>dotplot(ego,showCategory = 10)</code><br>
+<img src="/2021/10/09/clusterProfiler/2.png" alt><br>
+<code>barplot(ego,showCategory = 10)</code><br>
+<img src="/2021/10/09/clusterProfiler/3.png" alt></p>
+<h3 id="kegg分析"><a class="markdownIt-Anchor" href="#kegg分析"></a> KEGG分析</h3>
+<p>在代码方面同GO分析差不多:<br>
+<code>kk=enrichKEGG(te$entrzid,organism=&quot;hsa&quot;, pvalueCutoff=0.05,pAdjustMethod=&quot;BH&quot;,qvalueCutoff=0.1)</code><br>
+<code>kk=setReadable(kk,OrgDb = org.Hs.eg.db,keyType = 'ENTREZID')</code><br>
+经尝试，KEGG分析似乎不支持ENSEMBL的ID，所以运行上面之前先转换成ENTRZID:<br>
+<code>en=mapIds(x = org.Hs.eg.db,keys = ed$symbol,keytype = &quot;SYMBOL&quot;,column = &quot;ENTREZID&quot;)</code><br>
+<code>ed$entrzid=en</code><br>
+<code>te=na.omit(ed)</code><br>
+出图：<br>
+<code>barplot(kk,ddrop=T,showCategory =10,title=&quot;KEGG Enrichment Pathways&quot;)</code><br>
+<img src="/2021/10/09/clusterProfiler/4.png" alt></p>
+<p><strong>额外的pathview图：</strong><br>
+内容来源:<br>
+<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1539928">https://cloud.tencent.com/developer/article/1539928</a><br>
+<code>genem=tee$logFC</code><br>
+<code>names(genem)=row.names(tee)</code><br>
+<code>pathview(gene.data = genem,pathway.id = '04514',species = 'hsa')</code><br>
+<code>pathway.id</code>是信号通路的id，如04514意味着Cell adhesion molecules通路，画出的是该样本在某通路上的基因表达量变化。<br>
+<code>gene.data</code>是样本的表达量，这个可以是foldchange,也可以是cpm等等。<br>
+<code>genem</code>的行名须是ENTRZID.<br>
+<code>species</code>是种类。<br>
+<img src="/2021/10/09/clusterProfiler/5.png" alt></p>
+<h2 id="后续"><a class="markdownIt-Anchor" href="#后续"></a> 后续</h2>
+<p>1.原理（长期）。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!-- <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://tanzhengtang.github.io/2021/10/09/clusterProfiler/" title="clusterProfiler进行GO、KEGG以及相应的可视化" target="_blank" rel="external">https://tanzhengtang.github.io/2021/10/09/clusterProfiler/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote> -->
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/tanzhengtang" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/tanzhengtang" target="_blank"><span class="text-dark">Tan</span><small class="ml-1x"></small></a></h3>
+        <div>Novice Bioinformatics Prcatitioners</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/10/22/EdgeR(2)/" title="EdgeR查找差异表达基因(二)"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/10/09/Algorithm/radix-sort/" title="基数排序"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/tanzhengtang" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2023 Zhengtang Tan
+        
+        <!-- <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div> -->
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'YjBymcMiGsjo3pWP3tw28vfR-gzGzoHsz',
+    appKey: '1svA3cllqE0cfrMPv2m1w8po',
+    placeholder: 'Just say something',
+    avatar: 'mp',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: 'en'
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
