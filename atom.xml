@@ -69,6 +69,31 @@
   </entry>
   
   <entry>
+    <title>操作系统之乱写</title>
+    <link href="https://tanzhengtang.github.io/2023/03/01/os/"/>
+    <id>https://tanzhengtang.github.io/2023/03/01/os/</id>
+    <published>2023-02-28T16:00:00.000Z</published>
+    <updated>2023-04-30T04:09:10.560Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="操作系统之乱写之一点原理"><a class="markdownIt-Anchor" href="#操作系统之乱写之一点原理"></a> 操作系统之乱写之一点原理</h1><h2 id="汇编语言"><a class="markdownIt-Anchor" href="#汇编语言"></a> 汇编语言</h2><ul><li>采用的是intel汇编，学习书籍王爽老师的汇编语言。</li><li>还有其他的汇编语言，如AT&amp;T等。</li></ul><h2 id="计算机开机后的事情"><a class="markdownIt-Anchor" href="#计算机开机后的事情"></a> 计算机开机后的事情。</h2><ul><li>通电后，各硬件的自检和加载Bios由厂商做好，这一部分的知识基本就是由硬件决定的，暂时搁置。</li><li>如果各项工作正常进行后，BIOS会将硬盘上的第一个逻辑扇区中的512字节的程序加载至内存中的7c00h处。为什么是7c00h处，这是共有的标准，人为的强行规定。</li><li>这个512个字节的程序一般就是MBR程序，它会完成一系列的工作，让硬盘上的操作系统程序加载入内存，然后操场系统就接管了整个电脑的运转。</li></ul><h2 id="硬盘的事情"><a class="markdownIt-Anchor" href="#硬盘的事情"></a> 硬盘的事情</h2><ul><li>早期的硬盘分区为C/H/S。因为容量扩大，改成了LBA方式，更利于查找。</li><li>LBA简单粗暴的线性分区，直接将硬盘分为逻辑扇区，此时MBR就处于LBA分区下的第0扇区。</li><li>C/H/S可互转LBA，具体公式网上可查。</li><li>若LBA方式进行读写硬盘，有特定的一系列端口寄存器来进行控制。网上查可知。值得注意的是，此时一个计算机有多个硬盘，但是由于IDE设备寄存控制器的原因，每个IDE智能识别4个硬盘。</li></ul><h2 id="内存的事情"><a class="markdownIt-Anchor" href="#内存的事情"></a> 内存的事情</h2><ul><li>若是8086处理器（16位模式、实模式），那么地址位数为20位，自然可寻址的方位便是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>20</mn></msup></mrow><annotation encoding="application/x-tex">2^{20}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span></span></span></span>个字节。此时的内存寻址由段地址和偏移地址组成。</li><li>若是32位处理器（保护模式），则是利用GDT表的方式对内存进行管理。此时寄存器进行了扩展，原先的段寄存器中不再是段地址，而是段选择子，选择内存中的GDT，而根据GDT中的32位基地址与32位偏移地址相加得到线性地址。若是没有采用虚拟分页技术，此时为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>32</mn></msup></mrow><annotation encoding="application/x-tex">2^{32}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>的寻址空间。具体细节见intel官方的开发手册。</li><li>还有64位的模式，暂时搁置。</li></ul><h2 id="寄存器与端口的事情"><a class="markdownIt-Anchor" href="#寄存器与端口的事情"></a> 寄存器与端口的事情</h2><ul><li>16位情况下，ds, cs, ss, es是段寄存器。其余ax, bx, cx, di, si, ip, sp寄存器各有用处，现查即可。</li><li>32位情况下，ax等扩展成32为，并重新命名为eax，但此时仍然可兼容原先的用法。段寄存器位数不变，并新增加fs, gs两个段寄存器。</li><li>端口有8位和16位之分， 现查即可。</li></ul><h2 id="待续"><a class="markdownIt-Anchor" href="#待续"></a> 待续</h2><ul><li>太菜了，慢慢来，学完啥再写。</li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;操作系统之乱写之一点原理&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#操作系统之乱写之一点原理&quot;&gt;&lt;/a&gt; 操作系统之乱写之一点原理&lt;/h1&gt;
+&lt;h2 id=&quot;汇编语言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; hr</summary>
+      
+    
+    
+    
+    <category term="Computer" scheme="https://tanzhengtang.github.io/categories/Computer/"/>
+    
+    
+    <category term="Computer" scheme="https://tanzhengtang.github.io/tags/Computer/"/>
+    
+  </entry>
+  
+  <entry>
     <title>推送博客配置及笔记至github</title>
     <link href="https://tanzhengtang.github.io/2023/02/18/pusblogct/"/>
     <id>https://tanzhengtang.github.io/2023/02/18/pusblogct/</id>
