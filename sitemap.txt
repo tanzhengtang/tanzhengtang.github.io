@@ -1,5 +1,5 @@
+https://tanzhengtang.github.io/2023/03/01/Tao-analysis-Chapter3/
 https://tanzhengtang.github.io/2023/03/01/os/
-https://tanzhengtang.github.io/2023/03/08/Tao-analysis-Chapter3/
 https://tanzhengtang.github.io/2023/03/01/Tao-analysis-Chapter2/
 https://tanzhengtang.github.io/2022/04/25/sort/
 https://tanzhengtang.github.io/2023/02/18/pusblogct/
@@ -18,12 +18,12 @@ https://tanzhengtang.github.io/tags/RNA-Seq/
 https://tanzhengtang.github.io/tags/DE-Analysis/
 https://tanzhengtang.github.io/tags/Math/
 https://tanzhengtang.github.io/tags/Web/
-https://tanzhengtang.github.io/tags/Deep-Learning/
-https://tanzhengtang.github.io/tags/Algorithm/
 https://tanzhengtang.github.io/tags/Computer/
+https://tanzhengtang.github.io/tags/Algorithm/
+https://tanzhengtang.github.io/tags/Deep-Learning/
 https://tanzhengtang.github.io/categories/Blog/
 https://tanzhengtang.github.io/categories/Bioinformatics/
 https://tanzhengtang.github.io/categories/Math/
-https://tanzhengtang.github.io/categories/Statistical-Learning-Methods/
-https://tanzhengtang.github.io/categories/Algorithm/
 https://tanzhengtang.github.io/categories/Computer/
+https://tanzhengtang.github.io/categories/Algorithm/
+https://tanzhengtang.github.io/categories/Statistical-Learning-Methods/
